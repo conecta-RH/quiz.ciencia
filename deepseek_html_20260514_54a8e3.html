@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Simples - Radiações no Cotidiano | Turma 92</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-card {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 35px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .topo {
+            background: #2c5f8a;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .topo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .topo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .conteudo {
+            padding: 30px 25px;
+        }
+
+        /* pergunta atual */
+        .area-pergunta {
+            text-align: center;
+        }
+
+        .contador {
+            background: #eef2f7;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #2c5f8a;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .texto-pergunta {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        /* opções */
+        .lista-opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .opcao {
+            background: #f8fafc;
+            border: 2px solid #dce5ec;
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .opcao:hover {
+            background: #e3edf5;
+            border-color: #2c5f8a;
+        }
+
+        .opcao.selecionada {
+            background: #d9eaf3;
+            border-color: #2c5f8a;
+            box-shadow: 0 2px 6px rgba(44,95,138,0.2);
+        }
+
+        .opcao input {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            accent-color: #2c5f8a;
+            cursor: pointer;
+        }
+
+        .opcao label {
+            font-size: 1rem;
+            color: #1e2f3a;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* botoes */
+        .botoes {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            background: #2c5f8a;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            flex: 1;
+        }
+
+        button:hover {
+            background: #1e4568;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #b0c4ce;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reiniciar {
+            background: #7f8c8d;
+        }
+
+        .btn-reiniciar:hover {
+            background: #5d6e6f;
+        }
+
+        /* resultado final */
+        .tela-resultado {
+            text-align: center;
+        }
+
+        .pontuacao {
+            font-size: 3.8rem;
+            font-weight: bold;
+            color: #2c5f8a;
+            margin: 15px 0;
+        }
+
+        .mensagem {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #2c3e44;
+        }
+
+        .detalhes {
+            background: #f0f4f9;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .item-resposta {
+            border-bottom: 1px solid #cbdbe2;
+            padding: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .item-resposta.certa {
+            color: #2c6e2c;
+        }
+
+        .item-resposta.errada {
+            color: #c0392b;
+        }
+
+        .creditos {
+            margin-top: 25px;
+            padding: 15px;
+            background: #e8f0f3;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .creditos strong {
+            color: #2c5f8a;
+            font-size: 1rem;
+        }
+
+        hr {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 550px) {
+            .conteudo {
+                padding: 20px;
+            }
+            .texto-pergunta {
+                font-size: 1.2rem;
+            }
+            .opcao label {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card">
+    <div class="topo">
+        <h1>☢️ Radiações no Cotidiano ☢️</h1>
+        <p>Quiz super simples - 10 perguntas fáceis</p>
+    </div>
+    <div class="conteudo" id="conteudoQuiz">
+        <!-- renderizado pelo js -->
+    </div>
+</div>
+
+<script>
+    // ========== 10 PERGUNTAS SIMPLES SOBRE RADIAÇÕES ==========
+    const perguntas = [
+        {
+            texto: "Qual tipo de radiação é usado para tirar CHAPA DE RAIO-X no hospital?",
+            opcoes: ["Luz azul", "Raios X", "Micro-ondas", "Radiação do celular"],
+            correta: 1  // Raios X
+        },
+        {
+            texto: "As bananas emitem radiação natural. Qual elemento está presente nelas?",
+            opcoes: ["Césio", "Potássio", "Urânio", "Ferro"],
+            correta: 1  // Potássio
+        },
+        {
+            texto: "Qual aparelho de casa usa micro-ondas (radiação não-ionizante) para esquentar comida?",
+            opcoes: ["Geladeira", "Forno micro-ondas", "Liquidificador", "Televisão"],
+            correta: 1  // Forno micro-ondas
+        },
+        {
+            texto: "O que aconteceu em Goiânia em 1987 com um objeto radioativo?",
+            opcoes: ["Chuva radioativa", "Acidente com Césio-137", "Explosão de usina", "Queda de satélite"],
+            correta: 1  // Acidente Césio-137
+        },
+        {
+            texto: "Qual parte do corpo devemos proteger para evitar câncer de pele causado pelo sol?",
+            opcoes: ["Unhas", "Cabelo", "Pele (com protetor solar)", "Olhos só"],
+            correta: 2  // pele com protetor
+        },
+        {
+            texto: "O detector de fumaça de casa pode conter um material radioativo. Qual?",
+            opcoes: ["Chumbo", "Amerício", "Plutônio", "Mercúrio"],
+            correta: 1  // Amerício
+        },
+        {
+            texto: "Qual desses exames médicos USA RADIAÇÃO?",
+            opcoes: ["Ultrassom", "Ressonância magnética", "Tomografia computadorizada", "Eletrocardiograma"],
+            correta: 2  // Tomografia
+        },
+        {
+            texto: "O sol emite radiação ultravioleta (UV). O que ela pode causar na pele?",
+            opcoes: ["Queimadura e câncer de pele", "Apenas bronzeamento", "Frio", "Não causa nenhum dano"],
+            correta: 0  // queimadura e câncer
+        },
+        {
+            texto: "Qual desses lugares tem MAIS radiação natural? (de fundo)",
+            opcoes: ["Praia", "Montanha (altitude)", "Porão de casa (gás radônio)", "Escritório"],
+            correta: 2  // Porão com radônio
+        },
+        {
+            texto: "O que significa a sigla 'TC' (Tomografia Computadorizada)?",
+            opcoes: ["Terapia Corporal", "Tomografia que usa raios X", "Tratamento Clínico", "Teste de Calor"],
+            correta: 1  // Tomografia que usa raios X
+        }
+    ];
+
+    // Variáveis de controle
+    let indiceAtual = 0;                 // pergunta atual (0 a 9)
+    let respostasUsuario = new Array(perguntas.length).fill(null);  // armazena índice da alternativa escolhida
+    let quizFinalizado = false;
+
+    const container = document.getElementById('conteudoQuiz');
+
+    // Função principal: renderiza pergunta atual ou resultado final
+    function renderizar() {
+        if (!container) return;
+
+        // Se o quiz acabou, mostrar resultado com os créditos
+        if (quizFinalizado) {
+            mostrarResultadoFinal();
+            return;
+        }
+
+        const pergunta = perguntas[indiceAtual];
+        const respostaEscolhida = respostasUsuario[indiceAtual];
+
+        let html = `
+            <div class="area-pergunta">
+                <div class="contador">
+                    Pergunta ${indiceAtual + 1} de ${perguntas.length}
+                </div>
+                <div class="texto-pergunta">
+                    ${pergunta.texto}
+                </div>
+                <div class="lista-opcoes" id="listaOpcoes">
+        `;
+
+        // Gerar as alternativas (A, B, C, D)
+        pergunta.opcoes.forEach((opcao, idx) => {
+            const isSelecionada = (respostaEscolhida === idx);
+            const classeSelecionada = isSelecionada ? 'selecionada' : '';
+            html += `
+                <div class="opcao ${classeSelecionada}" data-opcao-idx="${idx}">
+                    <input type="radio" name="perguntaOpcao" value="${idx}" id="alt_${idx}" ${isSelecionada ? 'checked' : ''}>
+                    <label for="alt_${idx}">${String.fromCharCode(65+idx)} - ${opcao}</label>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+                <div class="botoes">
+                    <button id="btnVoltar" ${indiceAtual === 0 ? 'disabled' : ''}>◀ Voltar</button>
+                    <button id="btnAvancar">${indiceAtual === perguntas.length-1 ? 'Finalizar' : 'Próximo ▶'}</button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button id="btnReiniciar" class="btn-reiniciar" style="background:#95a5a6;">↺ Recomeçar quiz</button>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        // Evento para as opções
+        const opcoesDiv = document.querySelectorAll('.opcao');
+        opcoesDiv.forEach(div => {
+            const radio = div.querySelector('input[type="radio"]');
+            // Ao clicar na div
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'INPUT') {
+                    if (radio) radio.checked = true;
+                    if (radio) {
+                        const eventChange = new Event('change', { bubbles: true });
+                        radio.dispatchEvent(eventChange);
+                    }
+                }
+            });
+            // Ao mudar o radio
+            if (radio) {
+                radio.addEventListener('change', (e) => {
+                    const valorSelecionado = parseInt(e.target.value);
+                    respostasUsuario[indiceAtual] = valorSelecionado;
+                    // atualizar visual da opção selecionada
+                    document.querySelectorAll('.opcao').forEach(opt => {
+                        opt.classList.remove('selecionada');
+                    });
+                    div.classList.add('selecionada');
+                });
+            }
+        });
+
+        // Botão Voltar
+        const btnVoltar = document.getElementById('btnVoltar');
+        if (btnVoltar) {
+            btnVoltar.addEventListener('click', () => {
+                if (indiceAtual > 0) {
+                    indiceAtual--;
+                    renderizar();
+                }
+            });
+        }
+
+        // Botão Avançar / Finalizar
+        const btnAvancar = document.getElementById('btnAvancar');
+        if (btnAvancar) {
+            btnAvancar.addEventListener('click', () => {
+                // Verifica se respondeu a pergunta atual
+                if (respostasUsuario[indiceAtual] === null) {
+                    alert("👉 Responda essa pergunta antes de continuar!");
+                    return;
+                }
+                // Se for a última pergunta, finaliza
+                if (indiceAtual === perguntas.length - 1) {
+                    quizFinalizado = true;
+                    renderizar();
+                } else {
+                    indiceAtual++;
+                    renderizar();
+                }
+            });
+        }
+
+        // Botão Reiniciar (durante o quiz)
+        const btnReiniciar = document.getElementById('btnReiniciar');
+        if (btnReiniciar) {
+            btnReiniciar.addEventListener('click', () => {
+                reiniciarQuiz();
+            });
+        }
+    }
+
+    // Tela de resultado final + CRÉDITOS (Turma 92, Gustavo, Israel, Laura, Bryan)
+    function mostrarResultadoFinal() {
+        let acertos = 0;
+        const detalhes = [];
+
+        perguntas.forEach((pergunta, idx) => {
+            const respostaUser = respostasUsuario[idx];
+            const isAcertou = (respostaUser === pergunta.correta);
+            if (isAcertou) acertos++;
+            const textoRespostaUser = (respostaUser !== null) ? pergunta.opcoes[respostaUser] : "Não respondida";
+            const textoRespostaCerta = pergunta.opcoes[pergunta.correta];
+            detalhes.push({
+                pergunta: pergunta.texto,
+                suaResp: textoRespostaUser,
+                respCerta: textoRespostaCerta,
+                acertou: isAcertou
+            });
+        });
+
+        let mensagemFinal = "";
+        if (acertos === 10) mensagemFinal = "🎉 Perfeito! Você é um especialista em radiações! 🎉";
+        else if (acertos >= 7) mensagemFinal = "👍 Muito bem! Você aprendeu o básico!";
+        else if (acertos >= 5) mensagemFinal = "📚 Bom, mas pode melhorar! Estude mais um pouco.";
+        else mensagemFinal = "⚠️ Que tal revisar o tema? Radiação está em muitos lugares!";
+
+        let htmlResultado = `
+            <div class="tela-resultado">
+                <div class="pontuacao">${acertos} / ${perguntas.length}</div>
+                <div class="mensagem">${mensagemFinal}</div>
+                <div class="detalhes">
+                    <strong>📋 Revisão das perguntas:</strong><br><br>
+        `;
+
+        detalhes.forEach((det, i) => {
+            const classe = det.acertou ? "certa" : "errada";
+            const simbolo = det.acertou ? "✅" : "❌";
+            htmlResultado += `
+                <div class="item-resposta ${classe}">
+                    <strong>${i+1}. ${det.pergunta}</strong><br>
+                    ${simbolo} Sua resposta: ${det.suaResp}<br>
+                    ✔️ Correta: ${det.respCerta}
+                </div>
+                ${i < detalhes.length-1 ? '<hr>' : ''}
+            `;
+        });
+
+        htmlResultado += `
+                </div>
+                <button id="btnReiniciarFinal" style="margin: 10px 0 15px 0;">🔁 Fazer o quiz novamente</button>
+                
+                <!-- CRÉDITOS DA TURMA 92 -->
+                <div class="creditos">
+                    <strong>✨ Turma 92 ✨</strong><br>
+                    Trabalho em grupo feito por:<br>
+                    🇧🇷 <strong>Gustavo</strong> • 🇧🇷 <strong>Israel</strong> • 🇧🇷 <strong>Laura</strong> • 🇧🇷 <strong>Bryan</strong><br>
+                    📚 Radiações no Cotidiano - Quiz simples e direto
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = htmlResultado;
+
+        const btnReiniciarFinal = document.getElementById('btnReiniciarFinal');
+        if (btnReiniciarFinal) {
+            btnReiniciarFinal.addEventListener('click', () => {
+                reiniciarQuiz();
+            });
+        }
+    }
+
+    // Função para reiniciar tudo
+    function reiniciarQuiz() {
+        indiceAtual = 0;
+        respostasUsuario = new Array(perguntas.length).fill(null);
+        quizFinalizado = false;
+        renderizar();
+    }
+
+    // Inicializar o quiz
+    renderizar();
+</script>
+</body>
+</html>
